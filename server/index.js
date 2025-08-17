@@ -9,7 +9,12 @@ dotenv.config();
 const app = express();
 
 // middlewares
-app.use(cors({ origin: true, credentials: true })); // will refine later to your React port
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "*", // future me frontend url dalna
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use("/api/auth" , authRoutes);
