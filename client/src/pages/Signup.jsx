@@ -1,112 +1,84 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import { Mail, Lock, User } from "lucide-react";
 
-export default function Signup() {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
-  const [loading, setLoading] = useState(false);
+const Signup = () => {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  if (isAuthenticated) return <Navigate to="/" />;
+
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.password) {
-      toast.error("All fields are required!");
-      return;
-    }
-
     try {
-      setLoading(true);
-      const res = await fetch("https://auth-project-fua8.onrender.com/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Signup failed");
-
-      toast.success("Signup successful! Please login.");
-      navigate("/login");
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
+      if (res.ok) {
+        toast.success("Signup successful! Please login.");
+        navigate("/login");
+      } else {
+        toast.error(data.message || "Signup failed");
+      }
+    } catch {
+      toast.error("Something went wrong");
     }
   };
 
-  
-
   return (
-
-    
-    
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-indigo-600">
-      <div className="bg-white shadow-lg rounded-xl p-8 w-96">
-        <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Create Account</h2>
-
-        {/* <h1 className="text-3xl font-bold text-red-500">Hello Tailwind</h1> */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Name */}
-          <div className="flex items-center border rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-400">
-            <User className="text-gray-400 mr-2" size={18} />
-            <input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              value={formData.name}
-              onChange={handleChange}
-              className="flex-1 outline-none"
-            />
-          </div>
-
-          {/* Email */}
-          <div className="flex items-center border rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-400">
-            <Mail className="text-gray-400 mr-2" size={18} />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              value={formData.email}
-              onChange={handleChange}
-              className="flex-1 outline-none"
-            />
-          </div>
-
-          {/* Password */}
-          <div className="flex items-center border rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-400">
-            <Lock className="text-gray-400 mr-2" size={18} />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              className="flex-1 outline-none"
-            />
-          </div>
-
-          {/* Button */}
+    <div className="flex h-screen items-center justify-center bg-gray-100 p-4">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-lg">
+        <h2 className="mb-6 text-center text-2xl font-bold">Signup</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="name"
+            type="text"
+            placeholder="Name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border p-2"
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border p-2"
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border p-2"
+          />
           <button
             type="submit"
-            disabled={loading}
-            className={`w-full py-2 rounded-lg text-white font-semibold transition ${
-              loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-            }`}
+            className="w-full rounded-lg bg-green-600 py-2 text-white hover:bg-green-700"
           >
-            {loading ? "Registering..." : "Register"}
+            Signup
           </button>
         </form>
-
-        <p className="mt-4 text-sm text-center text-gray-600">
-          Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Login
-          </Link>
-        </p>
       </div>
     </div>
   );
-}
+};
+
+export default Signup;
