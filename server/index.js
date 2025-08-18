@@ -9,12 +9,10 @@ dotenv.config();
 const app = express();
 
 // middlewares
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL || "*", // future me frontend url dalna
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: ["http://localhost:5173", "https://auth-project-ashy.vercel.app"],
+  credentials: true
+}));
 app.use(express.json());
 
 app.use("/api/auth" , authRoutes);

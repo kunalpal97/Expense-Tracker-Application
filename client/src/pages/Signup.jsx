@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
@@ -7,6 +7,7 @@ const Signup = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) return <Navigate to="/" />;
 
@@ -15,6 +16,7 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`,
@@ -34,6 +36,8 @@ const Signup = () => {
       }
     } catch {
       toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,11 +75,19 @@ const Signup = () => {
           />
           <button
             type="submit"
-            className="w-full rounded-lg bg-green-600 py-2 text-white hover:bg-green-700"
+            disabled={loading}
+            className="w-full rounded-lg bg-green-600 py-2 text-white hover:bg-green-700 disabled:opacity-50"
           >
-            Signup
+            {loading ? "Signing up..." : "Signup"}
           </button>
         </form>
+
+        <p className="mt-4 text-center text-sm">
+          Already have an account?{" "}
+          <Link to="/login" className="text-green-600 hover:underline">
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );

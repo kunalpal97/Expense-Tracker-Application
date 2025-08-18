@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
@@ -7,6 +7,7 @@ const Login = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) return <Navigate to="/" />;
 
@@ -15,6 +16,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,
@@ -27,10 +29,7 @@ const Login = () => {
 
       const data = await res.json();
       if (res.ok) {
-        login(data.token);
-        localStorage.setItem("name", data.user.name);
-        localStorage.setItem("email", data.user.email);
-
+        login(data.token, data.user);
         toast.success("Login successful!");
         navigate("/");
       } else {
@@ -38,6 +37,8 @@ const Login = () => {
       }
     } catch {
       toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,11 +67,19 @@ const Login = () => {
           />
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 py-2 text-white hover:bg-blue-700"
+            disabled={loading}
+            className="w-full rounded-lg bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        <p className="mt-4 text-center text-sm">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-blue-600 hover:underline">
+            Signup
+          </Link>
+        </p>
       </div>
     </div>
   );
