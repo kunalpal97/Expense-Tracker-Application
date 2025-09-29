@@ -5,6 +5,9 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import { Toaster } from "react-hot-toast";
+import Transactions from "./pages/Transactions";
+import AnalyticsPage from "./pages/AnalyticsPage";
+
 
 function App() {
   return (
@@ -21,7 +24,12 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/transactions" element={
+        <ProtectedRoute><Transactions/></ProtectedRoute>} />
+        <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
+
       </Routes>
+        
     </AuthProvider>
   );
 }
