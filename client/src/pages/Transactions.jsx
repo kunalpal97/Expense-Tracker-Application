@@ -1,3 +1,5 @@
+
+
 // src/pages/Transactions.jsx
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -7,6 +9,14 @@ import {
   deleteTransaction as apiDelete,
   updateTransaction as apiUpdate,
 } from "../api/transaction";
+
+// Icons
+import { Edit2, Trash2 } from "lucide-react";
+
+function formatCurrency(n) {
+  if (n == null) return "₹0";
+  return "₹" + Number(n).toLocaleString("en-IN");
+}
 
 export default function Transactions() {
   const { token } = useAuth();
@@ -44,6 +54,18 @@ export default function Transactions() {
     if (token) fetchTransactions();
   }, [token]);
 
+  // Prevent background scroll when modal open
+  useEffect(() => {
+    if (editingId || deleteId) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [editingId, deleteId]);
+
   // Delete handlers
   const confirmDelete = (id) => setDeleteId(id);
 
@@ -72,7 +94,10 @@ export default function Transactions() {
     });
   };
 
-  const cancelEdit = () => setEditingId(null);
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingForm({});
+  };
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
@@ -104,6 +129,7 @@ export default function Transactions() {
       );
       toast.success("Transaction updated");
       setEditingId(null);
+      setEditingForm({});
     } catch (err) {
       console.error(err);
       toast.error("Failed to update transaction");
@@ -112,171 +138,204 @@ export default function Transactions() {
 
   return (
     <>
-      <h1 className="text-2xl font-bold mb-4">Transactions</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold">Transactions</h1>
+      </div>
 
-      <TransactionForm onSuccess={fetchTransactions} />
+      {/* Add form */}
+      <div className="mb-6">
+        <TransactionForm onSuccess={fetchTransactions} />
+      </div>
 
+      {/* Content */}
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-center py-8 text-gray-600">Loading...</p>
       ) : transactions.length === 0 ? (
-        <p className="text-gray-600">No transactions found.</p>
+        <div className="text-center py-16 text-gray-600">
+          <p className="mb-4">No transactions yet — add your first one!</p>
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          {/* Table for desktop */}
-          <table className="hidden md:table w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden">
-            <thead>
-              <tr className="bg-gray-200 text-left">
-                <th className="p-3">Date</th>
-                <th className="p-3">Category</th>
-                <th className="p-3">Type</th>
-                <th className="p-3">Amount</th>
-                <th className="p-3">Note</th>
-                <th className="p-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map((t) => (
-                <tr key={t._id} className="border-b hover:bg-gray-50 transition">
-                  {editingId === t._id ? (
-                    <>
-                      <td className="p-3">
-                        <input
-                          type="date"
-                          name="date"
-                          value={editingForm.date}
-                          onChange={handleEditChange}
-                          className="w-full max-w-[150px] rounded border p-1"
-                        />
-                      </td>
-                      <td className="p-3">
-                        <input
-                          name="category"
-                          value={editingForm.category}
-                          onChange={handleEditChange}
-                          className="w-full max-w-[150px] rounded border p-1"
-                        />
-                      </td>
-                      <td className="p-3">
-                        <select
-                          name="type"
-                          value={editingForm.type}
-                          onChange={handleEditChange}
-                          className="w-full max-w-[120px] rounded border p-1"
-                        >
-                          <option value="expense">expense</option>
-                          <option value="income">income</option>
-                        </select>
-                      </td>
-                      <td className="p-3">
-                        <input
-                          name="amount"
-                          value={editingForm.amount}
-                          onChange={handleEditChange}
-                          className="w-full max-w-[120px] rounded border p-1"
-                        />
-                      </td>
-                      <td className="p-3">
-                        <input
-                          name="note"
-                          value={editingForm.note}
-                          onChange={handleEditChange}
-                          className="w-full max-w-[200px] rounded border p-1"
-                        />
-                      </td>
-                      <td className="p-3">
-                        <button
-                          onClick={saveEdit}
-                          className="text-green-600 hover:underline mr-2"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={cancelEdit}
-                          className="text-gray-600 hover:underline"
-                        >
-                          Cancel
-                        </button>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td className="p-3">
-                        {new Date(t.date).toLocaleDateString()}
-                      </td>
-                      <td className="p-3 max-w-[150px] truncate">
-                        {t.category}
-                      </td>
-                      <td
-                        className={`p-3 font-semibold ${
-                          t.type === "income"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {t.type}
-                      </td>
-                      <td className="p-3">₹{t.amount}</td>
-                      <td className="p-3 max-w-[200px] truncate">{t.note}</td>
-                      <td className="p-3">
-                        <button
-                          onClick={() => startEdit(t)}
-                          className="text-blue-600 hover:underline mr-2"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => confirmDelete(t._id)}
-                          className="text-red-600 hover:underline"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div>
+          {/* Desktop table */}
+          <div className="hidden md:block">
+            <div className="overflow-hidden rounded-lg border">
+              <table className="w-full table-auto bg-white">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="p-3 text-left">Date</th>
+                    <th className="p-3 text-left">Category</th>
+                    <th className="p-3 text-left">Type</th>
+                    <th className="p-3 text-right">Amount</th>
+                    <th className="p-3 text-left">Note</th>
+                    <th className="p-3 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.map((t) => (
+                    <tr key={t._id} className="border-t hover:bg-gray-50">
+                      {editingId === t._id ? (
+                        <>
+                          <td className="p-3">
+                            <input
+                              type="date"
+                              name="date"
+                              value={editingForm.date}
+                              onChange={handleEditChange}
+                              className="w-full max-w-[160px] rounded border p-2"
+                            />
+                          </td>
+                          <td className="p-3">
+                            <input
+                              name="category"
+                              value={editingForm.category}
+                              onChange={handleEditChange}
+                              className="w-full max-w-[200px] rounded border p-2"
+                            />
+                          </td>
+                          <td className="p-3">
+                            <select
+                              name="type"
+                              value={editingForm.type}
+                              onChange={handleEditChange}
+                              className="rounded border p-2"
+                            >
+                              <option value="expense">expense</option>
+                              <option value="income">income</option>
+                            </select>
+                          </td>
+                          <td className="p-3 text-right">
+                            <input
+                              name="amount"
+                              value={editingForm.amount}
+                              onChange={handleEditChange}
+                              className="w-full max-w-[140px] rounded border p-2 text-right"
+                            />
+                          </td>
+                          <td className="p-3">
+                            <input
+                              name="note"
+                              value={editingForm.note}
+                              onChange={handleEditChange}
+                              className="w-full rounded border p-2"
+                            />
+                          </td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={saveEdit}
+                              className="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded mr-2"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={cancelEdit}
+                              className="inline-flex items-center px-3 py-1 bg-gray-200 rounded"
+                            >
+                              Cancel
+                            </button>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="p-3">
+                            {new Date(t.date).toLocaleDateString()}
+                          </td>
+                          <td className="p-3 max-w-[220px] truncate">
+                            {t.category}
+                          </td>
+                          <td className="p-3">
+                            <span
+                              className={`inline-block px-2 py-1 rounded text-sm font-medium ${
+                                t.type === "income"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {t.type}
+                            </span>
+                          </td>
+                          <td className="p-3 text-right font-semibold">
+                            {formatCurrency(t.amount)}
+                          </td>
+                          <td className="p-3 max-w-[300px] truncate">
+                            {t.note}
+                          </td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={() => startEdit(t)}
+                              className="inline-flex items-center gap-2 px-3 py-1 text-blue-600 hover:underline mr-2"
+                              aria-label="Edit transaction"
+                            >
+                              <Edit2 size={16} /> Edit
+                            </button>
+                            <button
+                              onClick={() => confirmDelete(t._id)}
+                              className="inline-flex items-center gap-2 px-3 py-1 text-red-600 hover:underline"
+                              aria-label="Delete transaction"
+                            >
+                              <Trash2 size={16} /> Delete
+                            </button>
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-          {/* Card view for mobile */}
+          {/* Mobile cards */}
           <div className="md:hidden space-y-4">
             {transactions.map((t) => (
               <div
                 key={t._id}
-                className="p-4 bg-white shadow rounded-md space-y-2"
+                className="bg-white p-4 rounded-lg shadow-sm border relative"
               >
-                <div className="flex justify-between text-sm">
-                  <span className="font-semibold">
-                    {new Date(t.date).toLocaleDateString()}
-                  </span>
-                  <span
-                    className={`font-semibold ${
-                      t.type === "income"
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {t.type}
-                  </span>
-                </div>
-                <div className="text-gray-700 text-sm">
-                  <p>Category: {t.category}</p>
-                  <p>Amount: ₹{t.amount}</p>
-                  {t.note && <p>Note: {t.note}</p>}
-                </div>
-                <div className="flex justify-end space-x-3">
-                  <button
-                    onClick={() => startEdit(t)}
-                    className="text-blue-600 text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => confirmDelete(t._id)}
-                    className="text-red-600 text-sm"
-                  >
-                    Delete
-                  </button>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-sm text-gray-500">
+                        {new Date(t.date).toLocaleDateString()}
+                      </div>
+
+                      <div
+                        className={`ml-2 inline-block text-xs px-2 py-1 rounded ${
+                          t.type === "income"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {t.type}
+                      </div>
+                    </div>
+
+                    <div className="mt-3 text-gray-800">
+                      <div className="font-medium">{t.category}</div>
+                      <div className="text-sm mt-1">{t.note}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-end space-y-2">
+                    <div className="font-semibold text-lg">
+                      {formatCurrency(t.amount)}
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => startEdit(t)}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded"
+                        aria-label="Edit transaction"
+                      >
+                        <Edit2 size={14} /> Edit
+                      </button>
+                      <button
+                        onClick={() => confirmDelete(t._id)}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-red-50 text-red-700 rounded"
+                        aria-label="Delete transaction"
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -284,18 +343,19 @@ export default function Transactions() {
         </div>
       )}
 
-      {/* Custom delete modal */}
+      {/* Delete Confirm Modal */}
       {deleteId && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-          <div className="bg-white rounded-lg p-6 w-[90%] max-w-sm shadow-lg">
-            <h2 className="text-lg font-bold mb-4">Confirm Delete</h2>
-            <p className="mb-6">
-              Are you sure you want to delete this transaction?
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
+            <h3 className="text-lg font-semibold mb-3">Confirm Delete</h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Are you sure you want to delete this transaction? This action
+              cannot be undone.
             </p>
-            <div className="flex justify-end space-x-3">
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteId(null)}
-                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+                className="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200"
               >
                 Cancel
               </button>
@@ -309,7 +369,117 @@ export default function Transactions() {
           </div>
         </div>
       )}
+
+      {/* Edit Modal (mobile + desktop) */}
+      {editingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Edit Transaction</h3>
+              <button
+                onClick={cancelEdit}
+                className="text-gray-500 hover:text-gray-700"
+                aria-label="Close edit modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  value={editingForm.date || ""}
+                  onChange={handleEditChange}
+                  className="mt-1 block w-full rounded border p-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Category
+                </label>
+                <input
+                  name="category"
+                  value={editingForm.category || ""}
+                  onChange={handleEditChange}
+                  placeholder="e.g. Food"
+                  className="mt-1 block w-full rounded border p-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Type
+                </label>
+                <select
+                  name="type"
+                  value={editingForm.type || "expense"}
+                  onChange={handleEditChange}
+                  className="mt-1 block w-full rounded border p-2"
+                >
+                  <option value="expense">expense</option>
+                  <option value="income">income</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Amount
+                </label>
+                <input
+                  name="amount"
+                  value={editingForm.amount || ""}
+                  onChange={handleEditChange}
+                  placeholder="e.g. 500"
+                  className="mt-1 block w-full rounded border p-2"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Note
+                </label>
+                <input
+                  name="note"
+                  value={editingForm.note || ""}
+                  onChange={handleEditChange}
+                  placeholder="Optional note"
+                  className="mt-1 block w-full rounded border p-2"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={cancelEdit}
+                className="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveEdit}
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
+
+
+
+
+
+
+
+
 
