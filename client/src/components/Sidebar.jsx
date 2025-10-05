@@ -1,83 +1,68 @@
 // src/components/Sidebar.jsx
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
-import {
-  Menu,
-  X,
-  Home,
-  List,
-  BarChart2,
-  User,
-  LogOut,
-} from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Home, List, BarChart, User, LogOut } from "lucide-react";
+import clsx from "clsx";
+import { useAuth } from "../context/AuthContext";
 
-export default function Sidebar({ user }) {
-  const [isOpen, setIsOpen] = useState(true);
+export default function Sidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    logout();
     navigate("/login");
   };
 
-  // Sidebar menu items
-  const menuItems = [
-    { name: "Dashboard", icon: <Home size={20} />, path: "/dashboard" },
-    { name: "Transactions", icon: <List size={20} />, path: "/transactions" },
-    { name: "Analytics", icon: <BarChart2 size={20} />, path: "/analytics" },
-    { name: "Profile", icon: <User size={20} />, path: "/profile" },
+  const navItems = [
+    { name: "Home", icon: Home, path: "/dashboard" },
+    { name: "Transactions", icon: List, path: "/transactions" },
+    { name: "Analytics", icon: BarChart, path: "/analytics" },
+    { name: "Profile", icon: User, path: "/profile" },
   ];
 
   return (
     <div
-      className={`${
-        isOpen ? "w-64" : "w-20"
-      } h-screen bg-gray-900 text-white flex flex-col transition-all duration-300`}
+      className={clsx(
+        "fixed inset-y-0 left-0 z-40 w-64 bg-[#0f172a] text-white transform transition-transform duration-300 md:translate-x-0 md:relative",
+        { "-translate-x-full": !isOpen }
+      )}
     >
-      {/* Toggle button */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-700">
-        {isOpen && <h1 className="text-xl font-bold">💰 ExpenseApp</h1>}
-        <button onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+      {/* Logo */}
+      <div className="p-4 text-2xl font-bold flex items-center gap-2">
+        💰 ExpenseApp
       </div>
 
-      {/* User Info */}
-      {isOpen && (
-        <div className="p-4 border-b border-gray-700">
-          <h2 className="text-lg font-semibold">{user?.name}</h2>
-          <p className="text-sm text-gray-400">{user?.email}</p>
-        </div>
-      )}
-
       {/* Navigation */}
-      <nav className="flex-1 p-2 space-y-2">
-        {menuItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            className={`flex items-center gap-3 p-2 rounded-md transition ${
-              location.pathname === item.path
-                ? "bg-gray-700 text-white"
-                : "hover:bg-gray-700 text-gray-300"
-            }`}
-          >
-            <span className="flex-shrink-0">{item.icon}</span>
-            {isOpen && <span>{item.name}</span>}
-          </Link>
-        ))}
+      <nav className="flex flex-col gap-2 p-4">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.name}
+              to={item.path}
+              className={({ isActive }) =>
+                clsx(
+                  "flex items-center gap-2 p-2 rounded transition-colors",
+                  isActive
+                    ? "bg-[#1e293b]"
+                    : "hover:bg-[#1e293b] text-gray-300"
+                )
+              }
+              onClick={() => setIsOpen(false)} // close on mobile tap
+            >
+              <Icon /> {item.name}
+            </NavLink>
+          );
+        })}
       </nav>
 
       {/* Logout */}
-      <div className="p-4 border-t border-gray-700">
+      <div className="absolute bottom-0 left-0 w-full p-4 border-t border-gray-700">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full p-2 rounded-md bg-red-600 hover:bg-red-700"
+          className="w-full flex items-center justify-center gap-2 bg-red-600 p-2 rounded hover:bg-red-700 transition"
         >
-          <LogOut size={20} />
-          {isOpen && <span>Logout</span>}
+          <LogOut /> Logout
         </button>
       </div>
     </div>
