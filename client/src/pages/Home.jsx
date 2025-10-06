@@ -177,7 +177,7 @@ export default function Home() {
         transition={{ delay: 0.3 }}
       >
         <Link
-          to="/transactions/add"
+          to="/transactions"
           className="bg-indigo-600 text-white px-5 py-2 rounded-xl shadow hover:bg-indigo-700 transition"
         >
           + Add Transaction
@@ -219,46 +219,56 @@ export default function Home() {
         </motion.div>
 
         {/* Category Pie Chart */}
-        <motion.div
-          className="bg-white rounded-2xl shadow-lg p-5 h-64"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h2 className="text-lg font-semibold mb-3">Category-wise Spending</h2>
-          {transactions.length === 0 ? (
-            <p className="text-gray-400">No transactions to display</p>
-          ) : (
-            // PieChart Component
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label={renderCustomizedLabel} // Fixed labels
-                  labelLine={false}
-                  isAnimationActive={true}
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value, name) => [`₹${value.toLocaleString("en-IN")}`, name]}
-                />
-                <Legend
-                  layout="horizontal"
-                  verticalAlign="bottom"
-                  align="center"
-                  iconType="square"
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
+          <motion.div
+            className="bg-white rounded-2xl shadow-lg p-5 flex flex-col items-center justify-between"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{ height: "22rem" }} // increased height for spacing (around 352px)
+          >
+            <h2 className="text-lg font-semibold mb-3 self-start">Category-wise Spending</h2>
+
+            {transactions.length === 0 ? (
+              <p className="text-gray-400">No transactions to display</p>
+            ) : (
+              <div className="flex-1 w-full flex flex-col items-center justify-center">
+                <ResponsiveContainer width="100%" height="85%">
+                  <PieChart>
+                    <Pie
+                      data={categoryData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="45%"
+                      outerRadius={90}
+                      label={renderCustomizedLabel}
+                      labelLine={false}
+                      isAnimationActive={true}
+                    >
+                      {categoryData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value, name) => [
+                        `₹${value.toLocaleString("en-IN")}`,
+                        name,
+                      ]}
+                    />
+                    <Legend
+                      layout="horizontal"
+                      verticalAlign="bottom"
+                      align="center"
+                      iconType="square"
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </motion.div>
+
       </div>
     </div>
   );
