@@ -1,110 +1,91 @@
-💰 Expense Tracker – Full Stack Application
+# 💰 Expense Tracker – Full Stack Application
 
-A modern and responsive Expense Tracker built using the MERN stack (MongoDB, Express, React, Node.js) with clean architecture, authentication, analytics, and deployment on Vercel (frontend) and Render (backend).
+A **modern and responsive Expense Tracker** built using the **MERN stack (MongoDB, Express, React, Node.js)** with clean architecture, authentication, analytics, and deployment on **Vercel (frontend)** and **Render (backend)**.
 
 This application helps users manage their finances by tracking income and expenses, visualizing spending patterns, and maintaining better financial discipline.
 
-📑 Table of Contents
+---
 
-Overview
+## 📑 Table of Contents
+- [Overview](#-overview)
+- [Tech Stack](#️-tech-stack)
+- [Features](#-features)
+- [Frontend Details](#-frontend-details)
+- [Backend Details](#-backend-details)
+- [Folder Structure](#-folder-structure)
+- [Getting Started](#-getting-started)
+- [API Documentation](#-api-documentation)
+- [Environment Variables](#-environment-variables)
+- [Security & Improvements](#-security--improvements)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Author](#-author)
 
-Tech Stack
+---
 
-Features
+## 🧾 Overview
 
-Frontend Details
+Expense Tracker is a **full-stack web application** that enables users to:
+- Register and log in securely.
+- Add, edit, delete, and view transactions.
+- Get real-time balance summaries.
+- View category-wise expense analytics via charts.
+- Enjoy a clean, responsive UI optimized for all devices.
 
-Backend Details
+Built with **React + Node.js + MongoDB**, this app follows scalable production-ready architecture and is fully open-source.
 
-Folder Structure
+---
 
-Getting Started
+## ⚙️ Tech Stack
 
-API Documentation
+| Category | Technology Used |
+|-----------|-----------------|
+| **Frontend** | React (Vite), Tailwind CSS, Framer Motion, Recharts, Lucide React |
+| **Backend** | Node.js, Express.js, MongoDB (Mongoose) |
+| **Authentication** | JWT (JSON Web Tokens), bcryptjs |
+| **State Management** | React Context API |
+| **Deployment** | Frontend → Vercel, Backend → Render |
+| **Version Control** | Git & GitHub |
 
-Environment Variables
+---
 
-Security & Improvements
+## 🧠 Features
 
-Contributing
+### 🔐 Authentication
+- Secure signup and login with JWT tokens.
+- Auth-protected routes on both frontend & backend.
+- Context API for persistent authentication state.
 
-License
+### 💸 Expense Management
+- Add income and expense transactions.
+- Edit or delete existing records.
+- Auto-updating balance summary.
 
-Author
+### 📊 Analytics
+- Beautiful Pie Chart showing category-wise spending.
+- Responsive and animated charts using Recharts.
+- Tooltip + Legend for clarity.
 
-🧾 Overview
+### 🎨 UI/UX Highlights
+- Responsive design for mobile and desktop.
+- Smooth animations with Framer Motion.
+- Minimalistic dashboard layout with an animated sidebar.
+- Logout button anchored at the bottom on small screens.
 
-Expense Tracker is a full-stack web application that enables users to:
+---
 
-Register and log in securely.
+## 🖥️ Frontend Details
 
-Add, edit, delete, and view transactions.
+**Framework & Libraries:**
+- React (Vite) for fast development and build.
+- Tailwind CSS for styling.
+- Framer Motion for animations.
+- Recharts for data visualization.
+- Lucide React for icons.
 
-Get real-time balance summaries.
+### 📁 Folder Structure
 
-View category-wise expense analytics via charts.
-
-Enjoy a clean, responsive UI optimized for all devices.
-
-Built with React + Node.js + MongoDB, this app follows scalable production-ready architecture and is fully open-source.
-
-⚙️ Tech Stack
-Category	Technology Used
-Frontend	React (Vite), Tailwind CSS, Framer Motion, Recharts, Lucide React
-Backend	Node.js, Express.js, MongoDB (Mongoose)
-Authentication	JWT (JSON Web Tokens), bcryptjs
-State Management	React Context API
-Deployment	Frontend → Vercel, Backend → Render
-Version Control	Git & GitHub
-🧠 Features
-🔐 Authentication
-
-Secure signup and login with JWT tokens.
-
-Auth-protected routes on both frontend & backend.
-
-Context API for persistent authentication state.
-
-💸 Expense Management
-
-Add income and expense transactions.
-
-Edit or delete existing records.
-
-Auto-updating balance summary.
-
-📊 Analytics
-
-Beautiful Pie Chart showing category-wise spending.
-
-Responsive and animated charts using Recharts.
-
-Tooltip + Legend for clarity.
-
-🎨 UI/UX Highlights
-
-Responsive design for mobile and desktop.
-
-Smooth animations with Framer Motion.
-
-Minimalistic dashboard layout with an animated sidebar.
-
-Logout button anchored at the bottom on small screens.
-
-🖥️ Frontend Details
-Framework & Libraries
-
-React (Vite) for fast development and build.
-
-Tailwind CSS for styling.
-
-Framer Motion for animations.
-
-Recharts for data visualization.
-
-Lucide React for icons.
-
-Folder Structure
+```
 client/
 │
 ├── src/
@@ -136,19 +117,21 @@ client/
 ├── tailwind.config.js                → Tailwind settings
 ├── vercel.json                       → Vercel deployment config
 └── package.json                      → Frontend dependencies
+```
 
-⚙️ Backend Details
-Framework & Libraries
+---
 
-Express.js for server and routing.
+## ⚙️ Backend Details
 
-MongoDB with Mongoose for database management.
+**Framework & Libraries:**
+- Express.js for server and routing.
+- MongoDB with Mongoose for database management.
+- JWT + bcryptjs for authentication and password hashing.
+- dotenv, cors, and morgan for configuration and logging.
 
-JWT + bcryptjs for authentication and password hashing.
+### 📁 Folder Structure
 
-dotenv, cors, and morgan for configuration and logging.
-
-Folder Structure
+```
 server/
 │
 ├── src/
@@ -163,86 +146,114 @@ server/
 ├── .env                    → Environment variables
 ├── package.json            → Dependencies
 └── package-lock.json
+```
 
-🚀 Getting Started
-🔹 Clone Repository
+---
+
+## 🚀 Getting Started
+
+### 🔹 Clone Repository
+```bash
 git clone https://github.com/kunalpal97/Expense-Tracker-Application.git
 cd Expense-Tracker-Application
+```
 
-🔹 Setup Frontend
+### 🔹 Setup Frontend
+```bash
 cd client
 npm install
 npm run dev
+```
 
-🔹 Setup Backend
+### 🔹 Setup Backend
+```bash
 cd server
 npm install
 npm start
+```
 
+**Default URLs:**
+- Backend → `http://localhost:5000`
+- Frontend → `http://localhost:5173`
 
-The backend will run (default: http://localhost:5000)
-Frontend will run (default: http://localhost:5173)
+---
 
-🌍 Environment Variables
-Frontend (client/.env)
+## 🌍 Environment Variables
+
+### Frontend (`client/.env`)
+```
 VITE_API_URL=https://your-backend-server.com/api
+```
 
-Backend (server/.env)
+### Backend (`server/.env`)
+```
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
 PORT=5000
+```
 
-🧾 API Documentation
-🔑 Authentication Routes
-Method	Endpoint	Description
-POST	/api/auth/signup	Register a new user
-POST	/api/auth/login	Authenticate user and return JWT
-💰 Transaction Routes
-Method	Endpoint	Description
-POST	/api/transactions	Add new transaction
-GET	/api/transactions	Get all transactions
-GET	/api/transactions/summary	Get summary of income, expense & balance
-PUT	/api/transactions/:id	Update transaction
-DELETE	/api/transactions/:id	Delete transaction
-🔒 Security & Improvements
+---
 
-Passwords are hashed using bcryptjs.
+## 🧾 API Documentation
 
-Tokens verified via JWT middleware.
+### 🔑 Authentication Routes
 
-CORS enabled for cross-origin requests.
+| Method | Endpoint | Description |
+|--------|-----------|-------------|
+| POST | `/api/auth/signup` | Register a new user |
+| POST | `/api/auth/login` | Authenticate user and return JWT |
 
-Recommendations:
+### 💰 Transaction Routes
 
-Add pagination for large transaction lists.
+| Method | Endpoint | Description |
+|--------|-----------|-------------|
+| POST | `/api/transactions` | Add new transaction |
+| GET | `/api/transactions` | Get all transactions |
+| GET | `/api/transactions/summary` | Get summary of income, expense & balance |
+| PUT | `/api/transactions/:id` | Update transaction |
+| DELETE | `/api/transactions/:id` | Delete transaction |
 
-Implement rate-limiting for login.
+---
 
-Add email verification and password reset.
+## 🔒 Security & Improvements
 
-🧑‍💻 Contributing
+- Passwords are hashed using **bcryptjs**.
+- Tokens verified via **JWT middleware**.
+- **CORS** enabled for cross-origin requests.
 
-Contributions are welcome!
+**Recommendations:**
+- Add pagination for large transaction lists.
+- Implement rate-limiting for login.
+- Add email verification and password reset.
 
-Fork the repo
+---
 
-Create a feature branch (feature/new-feature)
+## 🧑‍💻 Contributing
 
-Commit your changes
+Contributions are welcome!  
+Follow these steps:
 
-Submit a pull request
+1. **Fork** the repo  
+2. **Create a feature branch** → `feature/new-feature`  
+3. **Commit** your changes  
+4. **Submit a Pull Request**
 
-🧾 License
+---
 
-This project is licensed under the MIT License — feel free to modify and share with attribution.
+## 🧾 License
 
-👨‍💻 Author
+This project is licensed under the **MIT License** — feel free to modify and share with attribution.
 
-Kunal Pal
-Full Stack Developer | React · Node.js · TypeScript
-🌐 GitHub Profile
+---
 
-📧 Email: strive007boy@gmail.com
+## 👨‍💻 Author
 
-“Track your expenses. Visualize your growth. Stay financially ahead.”
-— Expense Tracker by Kunal Pal
+**Kunal Pal**  
+*Full Stack Developer | React · Node.js · TypeScript*  
+
+🌐 **GitHub:** [kunalpal97](https://github.com/kunalpal97)  
+📧 **Email:** strive007boy@gmail.com  
+
+> “Track your expenses. Visualize your growth. Stay financially ahead.”  
+> — *Expense Tracker by Kunal Pal*
+
